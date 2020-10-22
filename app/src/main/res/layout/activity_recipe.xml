@@ -74,7 +74,9 @@
             android:id="@+id/btn_subscribe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
             android:text="Subscribe"
+            android:textColor="@color/colorPrimary"
             android:layout_below="@id/ingredients_container"/>
 
     </RelativeLayout>
