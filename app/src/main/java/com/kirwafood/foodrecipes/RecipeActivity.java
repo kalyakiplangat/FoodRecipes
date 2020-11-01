@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -382,9 +381,9 @@ public class RecipeActivity extends BaseActivity implements PurchasesUpdatedList
             if (i2 == -1) {
                 try {
                     new JSONObject(stringExtra);
-                    Toast.makeText(this, "Thank you for subscribing", 0).show();
+                    Toast.makeText(this, "Thank you for subscribing", Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
-                    Toast.makeText(this, "An error occurred", 1).show();
+                    Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
