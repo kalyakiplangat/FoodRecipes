@@ -25,13 +25,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.billingclient.api.AcknowledgePurchaseParams;
-import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
-import com.android.billingclient.api.BillingResult;
-import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.PurchasesUpdatedListener;
-import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.util.BillingHelper;
 import com.android.vending.billing.IInAppBillingService;
 import com.bumptech.glide.Glide;
@@ -44,9 +38,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
-public class RecipeActivity extends BaseActivity implements PurchasesUpdatedListener {
+public class RecipeActivity extends BaseActivity {
 
     private static final String TAG = "RecipeActivity";
 
@@ -76,8 +69,6 @@ public class RecipeActivity extends BaseActivity implements PurchasesUpdatedList
             mService = IInAppBillingService.Stub.asInterface(service);
         }
     };
-    private Context context;
-    private String tag;
 
 
     @Override
@@ -93,23 +84,10 @@ public class RecipeActivity extends BaseActivity implements PurchasesUpdatedList
 
         mRecipeViewModel = ViewModelProviders.of(this).get(RecipeViewModel.class);
 
-
         showProgressBar(true);
         subscribeObservers();
         getIncomingIntent();
-        context = getApplicationContext();
-
-        // log tag
-        tag = "in_app_billing_ex";
-
-        Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
-        serviceIntent.setPackage("com.android.vending");
-
-        final boolean bindResult = context
-                .bindService(
-                        serviceIntent,
-                        mServiceConn, // ServiceConnection.
-                        Context.BIND_AUTO_CREATE);
+        Context context = getApplicationContext();
 
         buttonBuyProduct.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -133,15 +111,15 @@ public class RecipeActivity extends BaseActivity implements PurchasesUpdatedList
                 }
             }
         });
-        this.mServiceConn = new ServiceConnection() {
-            public void onServiceDisconnected(ComponentName componentName) {
-                RecipeActivity.this.mService = null;
-            }
-
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                RecipeActivity.this.mService = IInAppBillingService.Stub.asInterface(iBinder);
-            }
-        };
+//        this.mServiceConn = new ServiceConnection() {
+//            public void onServiceDisconnected(ComponentName componentName) {
+//                RecipeActivity.this.mService = null;
+//            }
+//
+//            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+//                RecipeActivity.this.mService = IInAppBillingService.Stub.asInterface(iBinder);
+//            }
+//        };
         Intent intent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         intent.setPackage("com.android.vending");
         bindService(intent, this.mServiceConn, Context.BIND_AUTO_CREATE);
@@ -175,66 +153,6 @@ public class RecipeActivity extends BaseActivity implements PurchasesUpdatedList
             }
         }, 3000);
     }
-//    private void setupBillingClient() {
-//        billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener(this).build();
-//        billingClient.startConnection(new BillingClientStateListener() {
-//            @Override
-//            public void onBillingSetupFinished(BillingResult billingResult) {
-//                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-//                    // The BillingClient is setup successfully
-//                    loadAllSKUs();
-//                }
-//            }
-//
-//            @Override
-//            public void onBillingServiceDisconnected() {
-//                // Try to restart the connection on the next request to
-//                // Google Play by calling the startConnection() method.
-//            }
-//        });
-//    }
-
-//    private void loadAllSKUs() {
-//
-//        if (billingClient.isReady()) {
-//            Toast.makeText(RecipeActivity.this, "billing Client ready", Toast.LENGTH_SHORT).show();
-//            SkuDetailsParams params = SkuDetailsParams.newBuilder()
-//                    .setSkusList(skuList)
-//                    .setType(BillingClient.SkuType.INAPP)
-//                    .build();
-//
-//            billingClient.querySkuDetailsAsync(params, new SkuDetailsResponseListener() {
-//                @Override
-//                public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
-//                    Toast.makeText(RecipeActivity.this, "inside query" + billingResult.getResponseCode(), Toast.LENGTH_SHORT).show();
-//                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK
-//                            && !skuDetailsList.isEmpty()) {
-//                        for (Object skuDetailsObject : skuDetailsList) {
-//                            final SkuDetails skuDetails = (SkuDetails) skuDetailsObject;
-//
-//                            if (skuDetails.getSku().equals(sku))
-//                                mSkuDetails = skuDetails;
-//                            buttonBuyProduct.setEnabled(true);
-//
-//                            buttonBuyProduct.setOnClickListener(new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View v) {
-//                                    BillingFlowParams billingFlowParams = BillingFlowParams
-//                                            .newBuilder()
-//                                            .setSkuDetails(skuDetails)
-//                                            .build();
-//                                    billingClient.launchBillingFlow(RecipeActivity.this, billingFlowParams);
-//
-//                                }
-//                            });
-//                        }
-//                    }
-//                }
-//            });
-//        } else {
-//            Toast.makeText(RecipeActivity.this, "billingclient not ready", Toast.LENGTH_SHORT).show();
-//        }
-//    }
 
     private void getIncomingIntent() {
         if (getIntent().hasExtra("recipe")) {
@@ -327,42 +245,6 @@ public class RecipeActivity extends BaseActivity implements PurchasesUpdatedList
     private void showParent() {
         mScrollView.setVisibility(View.VISIBLE);
     }
-
-    @Override
-    public void onPurchasesUpdated(BillingResult billingResult, @Nullable List<Purchase> purchases) {
-        int responseCode = billingResult.getResponseCode();
-        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK
-                && purchases != null) {
-            for (Purchase purchase : purchases) {
-                acknowledgePurchase(purchase.getPurchaseToken());
-            }
-        } else if (responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-            // Handle an error caused by a user cancelling the purchase flow.
-            //Log.d(TAG, "User Canceled" + responseCode);
-        } else if (responseCode == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED) {
-
-        } else {
-            //Log.d(TAG, "Other code" + responseCode);
-            // Handle any other error codes.
-        }
-    }
-
-    private void acknowledgePurchase(String purchaseToken) {
-
-        AcknowledgePurchaseParams params = AcknowledgePurchaseParams.newBuilder()
-                .setPurchaseToken(purchaseToken)
-                .build();
-        billingClient.acknowledgePurchase(params, new AcknowledgePurchaseResponseListener() {
-            @Override
-            public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
-                int responseCode = billingResult.getResponseCode();
-                String message = billingResult.getDebugMessage();
-            }
-        });
-        Toast.makeText(this, "Purchase done. you are now a premium member.", Toast.LENGTH_SHORT).show();
-
-    }
-
 
     public void onDestroy() {
         super.onDestroy();
