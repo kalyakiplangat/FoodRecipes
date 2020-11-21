@@ -19,6 +19,9 @@ import android.support.v7.widget.AppCompatImageView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -45,7 +48,7 @@ public class RecipeActivity extends BaseActivity {
 
     // UI components
     private AppCompatImageView mRecipeImage;
-    private TextView mRecipeTitle, mRecipeRank;
+    private TextView mRecipeTitle, mRecipeRank, mSource;
     private LinearLayout mRecipeIngredientsContainer;
     private ScrollView mScrollView;
 
@@ -78,6 +81,7 @@ public class RecipeActivity extends BaseActivity {
         mRecipeImage = findViewById(R.id.recipe_image);
         mRecipeTitle = findViewById(R.id.recipe_title);
         mRecipeRank = findViewById(R.id.recipe_social_score);
+        mSource = findViewById(R.id.recipe_source_url);
         mRecipeIngredientsContainer = findViewById(R.id.ingredients_container);
         mScrollView = findViewById(R.id.parent);
         buttonBuyProduct = findViewById(R.id.btn_subscribe);
@@ -88,6 +92,10 @@ public class RecipeActivity extends BaseActivity {
         subscribeObservers();
         getIncomingIntent();
         Context context = getApplicationContext();
+
+        Recipe recipe = getIntent().getParcelableExtra("recipe");
+        String mUrl = recipe.getSource_url();
+        initWebView(mUrl);
 
         buttonBuyProduct.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -111,15 +119,7 @@ public class RecipeActivity extends BaseActivity {
                 }
             }
         });
-//        this.mServiceConn = new ServiceConnection() {
-//            public void onServiceDisconnected(ComponentName componentName) {
-//                RecipeActivity.this.mService = null;
-//            }
-//
-//            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-//                RecipeActivity.this.mService = IInAppBillingService.Stub.asInterface(iBinder);
-//            }
-//        };
+
         Intent intent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         intent.setPackage("com.android.vending");
         bindService(intent, this.mServiceConn, Context.BIND_AUTO_CREATE);
@@ -152,6 +152,19 @@ public class RecipeActivity extends BaseActivity {
                 }
             }
         }, 3000);
+    }
+
+    private void initWebView(String url){
+        WebView webView = findViewById(R.id.webview);
+        webView.getSettings().setLoadsImagesAutomatically(true);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setSupportZoom(true);
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setDisplayZoomControls(false);
+        webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        webView.setWebViewClient(new WebViewClient());
+        webView.loadUrl(url);
     }
 
     private void getIncomingIntent() {
@@ -225,17 +238,19 @@ public class RecipeActivity extends BaseActivity {
 
             mRecipeTitle.setText(recipe.getTitle());
             mRecipeRank.setText(String.valueOf(Math.round(recipe.getSocial_rank())));
+            mSource.setText(recipe.getSource_url());
 
-            mRecipeIngredientsContainer.removeAllViews();
-            for (String ingredient : recipe.getIngredients()) {
-                TextView textView = new TextView(this);
-                textView.setText(ingredient);
-                textView.setTextSize(15);
-                textView.setLayoutParams(new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                ));
-                mRecipeIngredientsContainer.addView(textView);
-            }
+
+//            mRecipeIngredientsContainer.removeAllViews();
+//            for (String ingredient : recipe.getIngredients()) {
+//                TextView textView = new TextView(this);
+//                textView.setText(ingredient);
+//                textView.setTextSize(15);
+//                textView.setLayoutParams(new LinearLayout.LayoutParams(
+//                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+//                ));
+//                mRecipeIngredientsContainer.addView(textView);
+//            }
         }
 
         showParent();

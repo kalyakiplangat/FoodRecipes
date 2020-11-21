@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/parent"
-    android:visibility="gone">
+    android:visibility="visible">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -68,6 +68,25 @@
             android:orientation="vertical"
             android:layout_below="@+id/container"
             android:id="@+id/ingredients_container">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="100"
+                android:textSize="@dimen/recipe_publisher_text_size"
+                android:textStyle="normal"
+                android:id="@+id/recipe_source_url"
+                android:text="Ingredients"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/webViewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/ingredients_container"
+            android:layout_marginBottom="4dp">
+            <WebView
+                android:id="@+id/webview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
         </LinearLayout>
 
         <Button
@@ -77,7 +96,7 @@
             android:background="@color/colorAccent"
             android:text="Subscribe"
             android:textColor="@color/colorPrimary"
-            android:layout_below="@id/ingredients_container"/>
+            android:layout_below="@id/webViewContainer"/>
 
     </RelativeLayout>
 

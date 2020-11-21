@@ -12,16 +12,18 @@ public class Recipe implements Parcelable {
     private String[] ingredients;
     private String recipe_id;
     private String image_url;
+    private String source_url;
     private float social_rank;
 
     public Recipe(String title, String publisher, String[] ingredients, String recipe_id,
-                  String image_url, float social_rank) {
+                  String image_url, String source_url, float social_rank) {
         this.title = title;
         this.publisher = publisher;
         this.ingredients = ingredients;
         this.recipe_id = recipe_id;
         this.image_url = image_url;
         this.social_rank = social_rank;
+        this.source_url = source_url;
     }
 
     public Recipe() {
@@ -33,6 +35,7 @@ public class Recipe implements Parcelable {
         ingredients = in.createStringArray();
         recipe_id = in.readString();
         image_url = in.readString();
+        source_url = in.readString();
         social_rank = in.readFloat();
     }
 
@@ -96,6 +99,14 @@ public class Recipe implements Parcelable {
         this.social_rank = social_rank;
     }
 
+    public String getSource_url() {
+        return source_url;
+    }
+
+    public void setSource_url(String source_url) {
+        this.source_url = source_url;
+    }
+
     @Override
     public String toString() {
         return "Recipe{" +
@@ -122,6 +133,8 @@ public class Recipe implements Parcelable {
         dest.writeString(image_url);
         dest.writeFloat(social_rank);
     }
+
+
 }
 
 

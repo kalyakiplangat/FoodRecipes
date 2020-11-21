@@ -10,7 +10,7 @@ import com.kirwafood.foodrecipes.R;
 
 public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    TextView title, publisher, socialScore;
+    TextView title, publisher, socialScore, source;
     AppCompatImageView image;
     OnRecipeListener onRecipeListener;
 
@@ -22,6 +22,7 @@ public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.On
         title = itemView.findViewById(R.id.recipe_title);
         publisher = itemView.findViewById(R.id.recipe_publisher);
         socialScore = itemView.findViewById(R.id.recipe_social_score);
+        source = itemView.findViewById(R.id.webview);
         image = itemView.findViewById(R.id.recipe_image);
 
         itemView.setOnClickListener(this);
